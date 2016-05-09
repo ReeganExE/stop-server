@@ -5,11 +5,14 @@ var address = require('network-address')
 var updateNotifier = require('update-notifier')
 var powerOff = require('power-off')
 var sleepMode = require('sleep-mode')
+var bodyParser = require('body-parser')
 var pkg = require('./package.json')
 
 var app = express()
 var notifier = updateNotifier({ pkg: pkg })
 
+// parse application/json
+app.use(bodyParser.json())
 app.use(express.static(path.join(__dirname, 'public')))
 
 app.delete('/', function (req, res) {
@@ -27,6 +30,15 @@ app.post('/power-off', function (req, res) {
       res.end()
     }
   })
+})
+
+app.post('/auth', function(req, res) {
+  var config = require('./config.json');
+  if (config.passcode === req.body.code) {
+    res.end();
+  } else {
+    res.status(401).json({ error: 'Can\'t run power-off' })
+  }
 })
 
 app.post('/sleep', function (req, res) {

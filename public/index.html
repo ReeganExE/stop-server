@@ -26,20 +26,27 @@
     <script>
       function post(route) {
         if (confirm('Please confirm')) {
-          $.post(route)
-            .fail(function (jqXHR) {
-              if (jqXHR.status === 0) return alert('Can\'t connect to server')
-              alert(jqXHR.responseJSON.error)
-            })
+          // $.post(route)
+          //   .fail(function (jqXHR) {
+          //     if (jqXHR.status === 0) return alert('Can\'t connect to server')
+          //     alert(jqXHR.responseJSON.error)
+          //   })
         }
       }
 
+      function auth(route) {
+        var code = prompt('Passcode:');
+        $.getJSON('/auth', { route: route, code: code }).then(function(passed) {
+          passed && post(route);
+        });
+      }
+
       $('#power-off').on('click', function () {
-        post('/power-off')
+        auth('/power-off');
       })
 
       $('#sleep').on('click', function () {
-        post('/sleep')
+        auth('/sleep');
       })
 
       $.get('update', function (update) {
